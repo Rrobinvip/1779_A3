@@ -71,4 +71,4 @@ class ConfigForm(FlaskForm):
     submit = SubmitField("Apply")
 
 class ClearForm(FlaskForm):
-    clear = SubmitField("Clear Memcache")
+    delete = SubmitField("Remove all data")

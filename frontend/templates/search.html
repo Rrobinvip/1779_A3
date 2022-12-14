@@ -28,20 +28,11 @@
             </form>
 
             {% if filename and upload_time and key %}
-                {% if cache_flag %}
-                <div class="col-8 mx-auto mt-5 text-center">
-                    <h2> Image with key "{{key}}" found, filename: {{filename}} </h2>
-                    <h3> Upload datetime: {{upload_time}} </h3>
-                    <img class="img" style="width:400px;" src="{{ url_for('static', filename='local_cache/'+filename) }}" alt="">
-                </div>
-                {% else %}
                 <div class="col-8 mx-auto mt-5 text-center">
                     <h2> Image with key "{{key}}" found, filename: {{filename}} </h2>
                     <h3> Upload datetime: {{upload_time}} </h3>
                     <img class="img" style="width:400px;" src="{{ filename }}" alt="">
                 </div>
-                {% endif %}
-
             {% endif %}
         </div>
     </div>

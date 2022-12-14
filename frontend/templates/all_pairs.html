@@ -8,7 +8,6 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">id (by SQL)</th>
                     <th scope="col">key</th>
                     <th scope="col">filename</th>
                     <th scope="col">upload time</th>
@@ -18,10 +17,9 @@
             <tbody>
                 {% for item in items %}
                 <tr>
-                    <th scope="row">{{item[0]}}</th>
-                    <td>{{item[1]}}</td>
-                    <td>{{item[2]}}</td>
-                    <td>{{item[3]}}</td>
+                    <th scope="row">{{item['imageKey']['S']}}</th>
+                    <td>{{item['filename']['S']}}</td>
+                    <td>{{item['time']['S']}}</td>
                     <td><img class="img" style="width:200px;" src="{{ url_list[loop.index0] }}" alt=""></td>
                 </tr>
                 {% endfor %}
