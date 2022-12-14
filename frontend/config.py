@@ -13,3 +13,7 @@ class Config(object):
     MASTER_INSTANCE_ID = 'i-01e24b43881322f78'
     BUCKET_NAME = '1779-g17-test-1'
     DYNAMODB_NAME = '1779_a3_dev_1'
+    LAMBDA_API = {
+        'label_detection':'https://ooax7ms080.execute-api.us-east-1.amazonaws.com/imageDetection?filename=',
+        'facial_analysis':'https://ovss37g82h.execute-api.us-east-1.amazonaws.com/facialAnalysis?filename='
+    }

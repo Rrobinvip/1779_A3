@@ -1,7 +1,8 @@
 import boto3
 from frontend.config import Config
 from frontend.config import LOCAL_UPLOADS_DIR, LOCAL_CACHE_DIR, LOCAL_S3_DL_DIR
-from frontend.helper import current_datetime
+from frontend.helper import current_datetime, api_call_lambda
+import requests
 import os
 
 class AWSController:
@@ -140,3 +141,32 @@ class AWSController:
                     'imageKey': item['imageKey']
                 }
             )
+            
+    def get_image_label(self, filename):
+        '''
+        This function will call lambda to detect labels of an image.
+        
+        ### Return
+        response from lambda. None if something wrong.
+        '''
+        response = api_call_lambda(filename, 'label_detection')
+        if response != None:
+            return response
+        else:
+            return None
+        
+    def get_facial_analysis(self, filename):
+        '''
+        This function will call lambda to analysis a face.
+        
+        ### Return
+        response from lambda. None if something wrong.
+        '''
+        response = api_call_lambda(filename, 'facial_analysis')
+        if response != None:
+            return response
+        else:
+            return None
+        
+        
+        
