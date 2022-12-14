@@ -45,34 +45,16 @@
                         <a class="nav-link" href="{{ url_for('all_pairs') }}"> All pairs </a>
                     </li>
                     {% endif %}
-                    
-                    <span class="border border-primary rounded-pill">
-                    <li class="nav-item active btn-bs-outline-success">
-                        <a class="nav-link active" href="{{ url_for('go_manager') }}"> Manager </a>
-                    </li>
-                    </span>
 
-                   
-                    <!-- {% if tag3_selected %}
+                    {% if tag3_selected %}
                     <li class="nav-item active">
-                        <a class="nav-link active" href="{{ url_for('memcache_config') }}"> Mem-cache config </a>
+                        <a class="nav-link active" href="{{ url_for('delete_all') }}"> Delete all </a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('memcache_config') }}"> Mem-cache config </a>
+                        <a class="nav-link" href="{{ url_for('delete_all') }}"> Delete all </a>
                     </li>
                     {% endif %}
-                    
-
-                    {% if tag4_selected %}
-                    <li class="nav-item active">
-                        <a class="nav-link active" href="{{ url_for('memcache_status') }}"> Mem-cache status </a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('memcache_status') }}"> Mem-cache status </a>
-                    </li>
-                    {% endif %} -->
 
                 </ul>
             </div>

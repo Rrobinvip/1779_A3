@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %} Clear {% endblock %}
+{% block title %} Delete {% endblock %}
 
 {% block content%}
     <div class="row">
             
         <div class="col-12 mx-auto mt-5 text-center">
-            <h1 class="mb-5"> Clear memcache </h1>
+            <h1 class="mb-5"> Delete all date from Dynamo DB and S3. </h1>
             {% for mesg in get_flashed_messages() %}
             <div class="alert alert-success" role="alert">
                 {{ mesg }}
@@ -19,7 +19,7 @@
 
                 <div class="row justify-content-center mt-5 mx-auto">
                     <div class="col-auto">
-                        {{ form2.clear(class="btn btn-warning")}}
+                        {{ form2.delete(class="btn btn-danger")}}
                     </div>
                 </div>
             </form>

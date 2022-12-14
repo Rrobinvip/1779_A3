@@ -1,6 +1,7 @@
 import boto3
-from manager_app.config import Config
+from frontend.config import Config
 from frontend.config import LOCAL_UPLOADS_DIR, LOCAL_CACHE_DIR, LOCAL_S3_DL_DIR
+from frontend.helper import current_datetime
 import os
 
 class AWSController:
@@ -11,6 +12,8 @@ class AWSController:
     s3_resource = None
     s3_client = None
     bucket = None
+    
+    dynamo_db = None
 
     master_instance = None
 
@@ -21,138 +24,13 @@ class AWSController:
         '''
         self.ec2_resource = boto3.resource('ec2', region_name='us-east-1')
         self.ec2_client = boto3.client('ec2', region_name='us-east-1')
-        self.instance_list = [self.ec2_resource.Instance(i) for i in Config.INSTANCE_ID]
+
         self.s3_resource = boto3.resource('s3', region_name='us-east-1')
         self.s3_client = boto3.client('s3', region_name='us-east-1')
         self.bucket = self.s3_resource.Bucket(Config.BUCKET_NAME)
-        self.master_instance = self.ec2_resource.Instance(Config.MASTER_INSTANCE_ID)
-
-    def reload_instance_status(self):
-        '''
-        Reload instance state. This method must be executed before any operations that requires live state of the instance. Instance state doesn't automatically update. 
-        '''
-        for i in self.instance_list:
-            i.reload()
-        self.master_instance.reload()
-
-    def get_instances_status(self):
-        '''
-        Instance status doesn't update by themselves. They needed to by manually updated. This function will update their status and return a up to date list. 
-        '''
-        self.reload_instance_status()
-
-        result = {}
-
-        for i in self.instance_list:
-            result.update({i.id:i.state['Name']})
-
-        return result
-
-    def instance_operation(self, commend, flag):
-        '''
-        commend: growing or shrinking.
-        flag: 1 for grow/shrink 1 instance at a time. 0 for grow/shrink based on ratio 2/0.5.
-
-        This method will turn instance on or off based on commend and flag. 
-
-        ### Example:
-
-        When `flag == 1`, `commend == 'growing', method will go through all instances, find one stopped instance and start it. If there has no 
-        stopped instance, method will retun operation fail.
-
-        When `flag == 0`, `commend == 'growing', method will check if there has enough space to grow. Operation fail will be returned if no enough instances satisfy 
-        the growing ratie. Also when 'shrinking', method will make sure there has at least one instance running. 
-        '''
-        # Update instances status.
-        self.reload_instance_status()
-
-        if flag == 1:
-            opertion_success = False
-            if commend == "growing":
-                for i in self.instance_list:
-                    if i.state['Name'] == 'stopped':
-                        i.start()
-                        opertion_success = True
-                        break
-            else:
-                for i in self.instance_list:
-                    if i.state['Name'] == 'running':
-                        i.stop()
-                        opertion_success = True
-                        break
-            if opertion_success:
-                return {"status_code":200, "operation_type":"single growing/shrinking", "message":"operation success"}
-            else:
-                return {"status_code":400, "operation_type":"single growing/shrinking", "message":"operation failed"}
-
-        else:
-            operation_success = False
-            number_of_running_instances = 0
-            number_of_stopped_instances = 0
-
-            for i in self.instance_list:
-                if i.state['Name'] == 'running':
-                    number_of_running_instances+=1
-                elif i.state['Name'] == 'stopped':
-                    number_of_stopped_instances+=1
-
-            if commend == 'growing':
-                # conditional statement make sure there are enough space.
-                if 2*number_of_running_instances <= len(self.instance_list):
-                    for c in range(number_of_running_instances):
-                        for i in self.instance_list:
-                            if i.state['Name'] == 'stopped':
-                                i.start()
-                    operation_success = True
-            else:
-                if number_of_running_instances//2 >= 0:
-                    for c in range(number_of_running_instances-(number_of_running_instances-len(self.instance_list))):
-                        for i in self.instance_list:
-                            if i.state['Name'] == 'running':
-                                i.stop()
-                    operation_success = True
-            
-            if operation_success:
-                return {"status_code":200, "operation_type":"ratio growing/shrinking", "message":"operation success"}
-            else:
-                return {"status_code":400, "operation_type":"ratio growing/shrinking", "message":"operation failed"}
-
-    def get_ip_address(self):
-        '''
-        Return a dict of **running** instances.
-        '''
-        self.reload_instance_status()
-
-        result = {}
-
-        for i in self.instance_list:
-            if i.state['Name'] == 'running':
-                result.update({i.id:i.public_ip_address})
-        
-        return result
-    
-    def get_ip_address_all(self):
-        '''
-        Return a dict of all instances.
-        '''
-        self.reload_instance_status()
-
-        result = {}
-
-        for i in self.instance_list:
-            if i.state['Name'] != 'running':
-                result.update({i.id:'0.0.0.0'})
-            else:
-                result.update({i.id:i.public_ip_address})
-        
-        return result
-
-    def get_master_instance_ip_address(self):
-        self.reload_instance_status()
-        return self.master_instance.public_ip_address
+        self.dynamo_db = boto3.client('dynamodb')
 
     def clear_s3(self):
-        # TODO: remove all data inside S3.
         s3_bucket = self.s3_resource.Bucket('1779-g17-test-1')
         bucket_versioning = self.s3_resource.BucketVersioning('1779-g17-test-1')
         if bucket_versioning.status == 'Enabled':
@@ -162,14 +40,103 @@ class AWSController:
 
         return 1
 
-    def clear_RDS(self):
-        # TODO: remove all entries from RDS.
-        return 1
-
     def add_file_s3(self, filename):
         final_path = os.path.join(LOCAL_UPLOADS_DIR, filename)
-        self.s3_client.upload_file(final_path, Config.BUCKET_NAME, filename)
+        try:
+            self.s3_client.upload_file(final_path, Config.BUCKET_NAME, filename)
+            return True
+        except Exception as e:
+            print(' - Frontend.aws.add_file_s3: Failed to add item to the s3!')
+            return False
         
     def download_file(self, filename):
         final_path = os.path.join(LOCAL_S3_DL_DIR, filename)
-        self.s3_client.download_file(Config.BUCKET_NAME, filename, final_path)
+        try:
+            self.s3_client.download_file(Config.BUCKET_NAME, filename, final_path)
+            return True
+        except Exception as e:
+            print(' - Frontend.aws.download_file: Failed to add item to the s3!')
+            return False            
+        
+    def put_item_dynamo(self, key, filename):
+        '''
+        Put a item into dynamo table. Require key and filename. 
+        
+        ### Return
+        True - If put success.
+        
+        False - If put fails.
+        '''
+        date = current_datetime()
+        response = self.dynamo_db.put_item(
+            TableName=Config.DYNAMODB_NAME,
+            Item={
+                'imageKey': {'S': key},
+                'time': {'S': date},
+                'filename': {'S': filename},
+            }
+        )
+        
+        # Check the response
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            print(' - Frontend.aws.put_item_dynamo: Successfully added item to the table!')
+            return True
+        else:
+            print(' - Frontend.aws.put_item_dynamo: Failed to add item to the table!')
+            return False
+        
+    def get_item_dynamo(self, key):
+        '''
+        Search a item in dynamo DB. 
+        
+        ### Return 
+        filename, time as string, if success.
+        
+        None, if fails.
+        '''
+        response = self.dynamo_db.get_item(
+            TableName=Config.DYNAMODB_NAME,
+            Key={
+                'imageKey': {'S': key},
+            }
+        )
+        
+        # Check the response
+        if 'Item' in response:
+            item = response['Item']
+            print(' - Frontend.aws.get_item_dynamo: Successfully retrieved item with key{}'.format(key))
+            return item['filename']['S'], item['time']['S']
+        else:
+            print(' - Frontend.aws.get_item_dynamo: Failed to retrieve item from the table!')
+            return None, None
+        
+    def get_all_item_dynamo(self):
+        '''
+        Get all items from dynamo DB.
+        
+        ### Return 
+        All items.
+        '''
+        response = self.dynamo_db.scan(
+            TableName=Config.DYNAMODB_NAME,
+            ScanFilter={}
+        )
+        
+        return response['Items']
+    
+    def delete_all_dynamo(self):
+        response = self.dynamo_db.scan(
+            TableName=Config.DYNAMODB_NAME
+        )
+
+        # Get the items returned by the scan
+        items = response['Items']
+
+        # Iterate through the items and delete them one by one
+        for item in items:
+            self.dynamo_db.delete_item(
+                TableName=Config.DYNAMODB_NAME,
+                Key={
+                    'imageKey': item['imageKey']
+                }
+            )
