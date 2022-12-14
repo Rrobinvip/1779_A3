@@ -3,6 +3,7 @@ from frontend.config import LOCAL_CACHE_DIR, LOCAL_UPLOADS_DIR, ALLOWED_EXTENSIO
 import os
 import base64
 from datetime import datetime
+from frontend.config import Config
 
 def api_call_ipv4(ipv4, type, commend, params=None, timeout=0.5):
     '''
@@ -22,6 +23,19 @@ def api_call_ipv4(ipv4, type, commend, params=None, timeout=0.5):
             return requests.post(url, params, timeout=timeout)
         except requests.exceptions.RequestException as ce:
             return None
+
+def api_call_lambda(filename, type):
+    url = Config.LAMBDA_API.get(type)
+    if url == None:
+        return None
+    request_url = url+filename
+    
+    try:
+        response = requests.get(request_url)
+        return response
+    except Exception as e:
+        return None
+    
 
 def api_call(type, commend, params=None):
     '''
