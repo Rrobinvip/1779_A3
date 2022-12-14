@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %} Clear {% endblock %}
+
+{% block content%}
+    <div class="row">
+            
+        <div class="col-12 mx-auto mt-5 text-center">
+            <h1 class="mb-5"> Clear memcache </h1>
+            {% for mesg in get_flashed_messages() %}
+            <div class="alert alert-success" role="alert">
+                {{ mesg }}
+            </div> 
+            {% endfor %}
+
+            <form method="POST" enctype="multipart/form-data">
+                {{ form2.hidden_tag() }}
+            
+
+                <div class="row justify-content-center mt-5 mx-auto">
+                    <div class="col-auto">
+                        {{ form2.clear(class="btn btn-warning")}}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

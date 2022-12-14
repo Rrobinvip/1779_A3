@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %} Auto Resizing {% endblock %}
+
+{% block content%}
+    <div class="col-12 mx-auto mt-5">
+        <h1 class="mb-5"> Instances status </h1>
+        {% if status_dic %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Instance ID</th>
+                    <th scope="col">Instance Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key in status_dic %}
+                <tr>
+                    <th scope="row">{{ key }}</th>
+                    <td>{{ status_dic[key] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-warning" role="alert">
+            Empty
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="row">
+            
+        <div class="col-12 mx-auto mt-5 text-center">
+            <h1 class="mb-5"> Automatic resizing policy </h1>
+            {% for mesg in get_flashed_messages() %}
+            <div class="alert alert-success" role="alert">
+                {{ mesg }}
+            </div> 
+            {% endfor %}
+
+            <form method="POST" enctype="multipart/form-data">
+                {{ form1.hidden_tag() }}
+                <div class="row justify-content-center mt-2">
+                    <div class="col-auto">
+                        {{ form1.max_threshold(class="form-control")}}
+                    </div>
+                    <div class="col-auto">
+                        {{ form1.min_threshold(class="form-control")}}
+                    </div>
+                </div>
+                <div class="row justify-content-center mt-2">
+                    <div class="col-auto">
+                        {{ form1.expand_ratio(class="form-control")}}
+                    </div>
+                    <div class="col-auto">
+                        {{ form1.shrink_ratio(class="form-control")}}
+                    </div>
+                </div>
+                <div class="row justify-content-center mt-2">
+                    <div class="col-auto">
+                        {{ form1.submit(class="btn btn-success")}}
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+{% endblock %}

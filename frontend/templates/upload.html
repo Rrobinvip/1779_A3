@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %} Upload {% endblock %}
+
+{% block content%}
+
+    <div class="row">
+        
+        <div class="col-12 mx-auto mt-5 text-center">
+            <h1 class="mb-5"> Upload image here </h1>
+            {% for mesg in get_flashed_messages() %}
+            <div class="alert alert-success" role="alert">
+                {{ mesg }}
+            </div> 
+            {% endfor %}
+
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                
+                {% for error in form.pictures.errors %}
+                    <span style="color: red;">{{error }}</span>
+                {% endfor %}
+
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        {{ form.pictures(class="form-control")}}
+                    </div>
+                    <div class="col-auto">
+                        {{ form.key(class="form-control")}}
+                    </div>
+                    <div class="col-auto">
+                        {{ form.submit(class="btn btn-success")}}
+                    </div>
+                </div>
+            </form>
+
+            {% if fil_url %}
+                <div class="col-8">
+                    <!-- <h3>KEY: {{ key }}</h3> -->
+                    <img src="{{ file_url }}" style="width: 400px;">
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

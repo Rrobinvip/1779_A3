@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <!-- block title -->
+        <title> {% block title %}{% endblock %}</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+    </head>
+
+
+    <body>
+        <!-- USAGE: When rendering the template, tag#_selected needs to be defined as True/False as part of the rendering argument to achieve visual effect of the button -->
+        <nav class="navbar navbar-expand-lg navbar-default bg-light">
+            <a class="navbar-brand mx-3" href="{{ url_for('upload_picture') }}">Upload</a>
+            
+            <!-- Responsive collapse on navbar. -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-3">
+                    <!-- TODO: Complete url_for() -->
+                    {% if tag1_selected %}
+                    <li class="nav-item active">
+                        <a class="nav-link active" href="{{ url_for('search_key') }}"> Key-picture </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('search_key') }}"> Key-picture </a>
+                    </li>
+                    {% endif %}
+
+                    <!-- TODO: Complete url_for() -->
+                    {% if tag2_selected %}
+                    <li class="nav-item active">
+                        <a class="nav-link active" href="{{ url_for('all_pairs') }}"> All pairs </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('all_pairs') }}"> All pairs </a>
+                    </li>
+                    {% endif %}
+                    
+                    <span class="border border-primary rounded-pill">
+                    <li class="nav-item active btn-bs-outline-success">
+                        <a class="nav-link active" href="{{ url_for('go_manager') }}"> Manager </a>
+                    </li>
+                    </span>
+
+                   
+                    <!-- {% if tag3_selected %}
+                    <li class="nav-item active">
+                        <a class="nav-link active" href="{{ url_for('memcache_config') }}"> Mem-cache config </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('memcache_config') }}"> Mem-cache config </a>
+                    </li>
+                    {% endif %}
+                    
+
+                    {% if tag4_selected %}
+                    <li class="nav-item active">
+                        <a class="nav-link active" href="{{ url_for('memcache_status') }}"> Mem-cache status </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('memcache_status') }}"> Mem-cache status </a>
+                    </li>
+                    {% endif %} -->
+
+                </ul>
+            </div>
+        </nav>
+
+
+        <div class="container">
+            <!-- blokc content, for major content on crossponding page.-->
+            {% block content %}{% endblock %}
+        </div>
+
+    </body>
+</html>

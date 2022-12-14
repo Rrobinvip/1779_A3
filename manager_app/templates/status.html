@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %} Status {% endblock %}
+
+{% block content%}
+    <div class="col-12 mx-auto mt-5">
+        <h1 class="mb-5"> Instances status </h1>
+        {% if status_dic %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Instance ID</th>
+                    <th scope="col">Instance Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key in status_dic %}
+                <tr>
+                    <th scope="row">{{ key }}</th>
+                    <td>{{ status_dic[key] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-warning" role="alert">
+            Empty
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-12 mx-auto mt-5">
+        <h1 class="mb-5"> Memcache status (in avg.)</h1>  
+
+        {% if images %}
+        {% for image in images %}
+        <img src = 'data:image/png;base64,{{image}}' />
+        {% endfor %}
+        {% else %}
+        <div class="alert alert-warning" role="alert">
+            Empty
+        </div>
+        {% endif %}
+    </div>
+
+
+
+{% endblock %}
