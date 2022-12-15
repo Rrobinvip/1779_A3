@@ -72,3 +72,7 @@ class ConfigForm(FlaskForm):
 
 class ClearForm(FlaskForm):
     delete = SubmitField("Remove all data")
+    
+class ImageActionForm(FlaskForm):
+    label = SubmitField("Label detection")
+    facial = SubmitField("Facial analysis")

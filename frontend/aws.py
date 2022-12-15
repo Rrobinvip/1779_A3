@@ -168,5 +168,34 @@ class AWSController:
         else:
             return None
         
+    def unpack_rekognition_response(self, action_type, response):
+        '''
+        This function will unpack response returned from rekognition.
         
+        :parms action_type: `label` or `facial`. 
         
+        :parms response: response from `get_image_label` and `get_facial_analysis`.
+        
+        ### Return 
+        A dict of labels and confidence. 
+        '''
+        if action_type == 'label':
+            data = response.json()
+            result = {}
+            if len(data['Labels']) != 0:
+                for i, label in enumerate(data['Labels']):
+                    result.update({label['Name']:label['Confidence']})
+            return result
+        else:
+            data = response.json()
+            result = {}
+
+            if len(data['FaceDetails']) != 0:
+                facial_data_dict = data['FaceDetails'][0]
+                result.update({'AgeRange':facial_data_dict['AgeRange']})
+                result.update({'Smile':facial_data_dict['Smile']})
+                result.update({'Gender':facial_data_dict['Gender']})
+                result.update({'Emotions':facial_data_dict['Emotions'][0]})
+            return result
+            
+                    

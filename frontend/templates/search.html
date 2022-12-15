@@ -33,6 +33,12 @@
                     <h3> Upload datetime: {{upload_time}} </h3>
                     <img class="img" style="width:400px;" src="{{ filename }}" alt="">
                 </div>
+                
+                <div class="row justify-content-center mt-5 mx-auto">
+                    <div class="col-auto">
+                        <a class="btn btn-primary" href="{{ url_for('image_action', key=key) }}" role="button">Analysis your image!</a>
+                    </div>
+                </div>
             {% endif %}
         </div>
     </div>

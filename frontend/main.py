@@ -37,6 +37,9 @@ from frontend.aws import AWSController
 # Config
 from frontend.config import Config
 
+# Image action form
+from frontend.form import ImageActionForm
+
 
 '''
 **IMPORTANT!** instances doesn't updat their status automatically. Call `aws_controller.reload_instance_status()` every time befroe any
@@ -153,7 +156,6 @@ def all_pairs():
 
     if data:
         for i,item in enumerate(data):
-            print(" - allpairs: {}".format(item))
             image_url.append('https://{}.s3.amazonaws.com/{}'.format(Config.BUCKET_NAME, item['filename']['S']))
 
     return render_template("all_pairs.html", items=data, tag2_selected=True, url_list=image_url)
@@ -168,6 +170,46 @@ def delete_all():
         flash("All data deleted.")
     
     return render_template("delete.html", form2 = delete_form, tag3_selected=True)
+    
+@app.route("/image/<key>", methods=['GET', 'POST'])
+def image_action(key):
+    image_action_form = ImageActionForm()
+    key = key
+    filename = None
+    upload_time = None
+    result_label = None
+    result_facial = None
+        
+    if key == None:
+        return render_template('404.html')
+    else:
+        filename, upload_time = aws_controller.get_item_dynamo(key)
+        if filename == None and upload_time == None:
+            return render_template('404.html')
+        filename_s3 = 'https://{}.s3.amazonaws.com/{}'.format(Config.BUCKET_NAME, filename)
+        
+    if image_action_form.validate_on_submit():
+        if image_action_form.label.data:
+            response_label = aws_controller.get_image_label(filename)
+            result_label = aws_controller.unpack_rekognition_response('label', response_label)
+            if len(result_label) == 0:
+                flash("No labels detected.")
+                return redirect(url_for('image_action', key=key))
+        else:
+            response_facial = aws_controller.get_facial_analysis(filename)
+            result_facial = aws_controller.unpack_rekognition_response('facial', response_facial)
+            if len(result_facial) == 0:
+                flash("Can't apply facial analysis, maybe there has no faces.")
+                return redirect(url_for('image_action', key=key))
+            
+    
+    return render_template("image_action.html", 
+                           key=key, 
+                           filename=filename_s3, 
+                           upload_time=upload_time,
+                           form = image_action_form,
+                           label = result_label,
+                           facial = result_facial)
     
 
 @app.route("/api/list_keys", methods= ['POST'])
