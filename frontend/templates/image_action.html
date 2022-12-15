@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ key }} {% endblock %}
+
+{% block content%}
+    <div class="row">
+            
+        <div class="col-12 mx-auto mt-5 text-center">
+            <h1 class="mb-5"> Apply action to your image </h1>
+            {% for mesg in get_flashed_messages() %}
+            <div class="alert alert-danger" role="alert">
+                {{ mesg }}
+            </div> 
+            {% endfor %}
+
+            {% if filename and upload_time and key %}
+                <div class="col-8 mx-auto mt-5 text-center">
+                    <h4> Image with key "{{key}}" found, filename: {{filename}} </h2>
+                    <h4> Upload datetime: {{upload_time}} </h3>
+                    <img class="img" style="width:400px;" src="{{ filename }}" alt="">
+                </div>
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+            
+
+                <div class="row justify-content-center mt-5">
+                    <div class="col-auto">
+                        {{ form.label(class="btn btn-primary")}}
+                    </div>
+                    <div class="col-auto">
+                        {{ form.facial(class="btn btn-primary")}}
+                    </div>
+                </div>
+            </form>
+
+            {% if label %}
+            <div class="col-12 mx-auto mt-5"></div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Label</th>
+                            <th scope="col">Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, value in label.items() %}
+                        <tr>
+                            <td>{{ key }}</td>
+                            <td>{{ value  }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            {% if facial %}
+            <div class="col-12 mx-auto mt-5"></div>
+            <div class="alert alert-warning" role="alert">
+                Gender is purely identified by AWS Rekognition and we do not make any kind of assumptions on it. 
+                We are not responsible for this gender.
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Features</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td scope="row">AgeRange</th>
+                        <td>At least {{ facial['AgeRange']['Low'] }}, at most {{ facial['AgeRange']['High'] }}</td>
+                    </tr>
+                    <tr>
+                        <td scope="row">Smile</th>
+                        <td>
+                            {% if facial['Smile']['Value'] == False %}
+                            No, with 
+                            {% else %}
+                            Yes, with 
+                            {% endif %}
+                            {{ facial['Smile']['Confidence'] }}% confidence
+                        </td>
+                    </tr>
+                    <tr>
+                        <td scope="row">Gender</th>
+                        <td>
+                            {% if facial['Gender']['Value'] == 'Female' %}
+                            Female, with
+                            {% else %}
+                            Male, with 
+                            {% endif %}
+                            {{ facial['Gender']['Confidence'] }}% confidence
+                        </td>
+                    </tr>
+                    <tr>
+                        <td scope="row">Emotion</th>
+                        <td>
+                            {{ facial['Emotions']['Type'] }}, with 
+                            {{ facial['Emotions']['Confidence'] }}% confidence
+                        </td>
+                    </tr>
+
+
+                </tbody>
+            </table>
+        </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

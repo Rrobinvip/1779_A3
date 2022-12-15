@@ -29,6 +29,7 @@ def api_call_lambda(filename, type):
     if url == None:
         return None
     request_url = url+filename
+    print(" - frontend.helper.call_lambda: api:{}".format(request_url))
     
     try:
         response = requests.get(request_url)
