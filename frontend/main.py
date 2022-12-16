@@ -179,6 +179,7 @@ def image_action(key):
     upload_time = None
     result_label = None
     result_facial = None
+    result_cele = None
         
     if key == None:
         return render_template('404.html')
@@ -195,11 +196,17 @@ def image_action(key):
             if len(result_label) == 0:
                 flash("No labels detected.")
                 return redirect(url_for('image_action', key=key))
-        else:
+        elif image_action_form.facial.data:
             response_facial = aws_controller.get_facial_analysis(filename)
             result_facial = aws_controller.unpack_rekognition_response('facial', response_facial)
             if len(result_facial) == 0:
                 flash("Can't apply facial analysis, maybe there has no faces.")
+                return redirect(url_for('image_action', key=key))
+        else:
+            response_celebrity = aws_controller.get_celebrity_info(filename)
+            result_cele = aws_controller.unpack_rekognition_response('celebrity', response_celebrity)
+            if len(result_cele) == 0:
+                flash("Can't apply celebrity recognize, maybe there has no celebrities.")
                 return redirect(url_for('image_action', key=key))
             
     
@@ -209,7 +216,8 @@ def image_action(key):
                            upload_time=upload_time,
                            form = image_action_form,
                            label = result_label,
-                           facial = result_facial)
+                           facial = result_facial,
+                           cele = result_cele)
     
 
 @app.route("/api/list_keys", methods= ['POST'])

@@ -76,3 +76,4 @@ class ClearForm(FlaskForm):
 class ImageActionForm(FlaskForm):
     label = SubmitField("Label detection")
     facial = SubmitField("Facial analysis")
+    celebrity = SubmitField("Celebrity detect")

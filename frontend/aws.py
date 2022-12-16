@@ -168,13 +168,26 @@ class AWSController:
         else:
             return None
         
+    def get_celebrity_info(self, filename):
+        '''
+        This function will call lambda to recognize a celebrity.
+        
+        ### Return
+        response from lambda. None if something wrong.
+        '''
+        response = api_call_lambda(filename, 'celebrity_detect')
+        if response != None:
+            return response
+        else:
+            return None
+        
     def unpack_rekognition_response(self, action_type, response):
         '''
         This function will unpack response returned from rekognition.
         
-        :parms action_type: `label` or `facial`. 
+        :parms action_type: `label`, `facial`, or 'celebrity'. 
         
-        :parms response: response from `get_image_label` and `get_facial_analysis`.
+        :parms response: response from `get_image_label` and `get_facial_analysis` and `get_celebrity_info`.
         
         ### Return 
         A dict of labels and confidence. 
@@ -182,11 +195,12 @@ class AWSController:
         if action_type == 'label':
             data = response.json()
             result = {}
+            
             if len(data['Labels']) != 0:
                 for i, label in enumerate(data['Labels']):
                     result.update({label['Name']:label['Confidence']})
             return result
-        else:
+        elif action_type == 'facial':
             data = response.json()
             result = {}
 
@@ -197,5 +211,14 @@ class AWSController:
                 result.update({'Gender':facial_data_dict['Gender']})
                 result.update({'Emotions':facial_data_dict['Emotions'][0]})
             return result
+        else:
+            data = response.json()
+            result = {}
             
-                    
+            if len(data['CelebrityFaces']) != 0:
+                celebrity_info = data['CelebrityFaces'][0]
+                result.update({'url':celebrity_info['Urls'][0]})
+                result.update({'Name':celebrity_info['Name']})
+                result.update({'Emotions':celebrity_info['Face']['Emotions'][0]})
+                
+            return result
