@@ -1,15 +1,36 @@
 # ECE 1779 A3 Pic cache and recognition - Group 17
 
-## To run
+## Zappa
+Project is already deployed on Lambda with Zappa. 
+
+To redeploy - `zappa deploy dev`.
+
+To undeploy - `zappa undeploy dev`.
+
+To update - `zappa update dev`
+
+Trouble shooting: Following permissions must be given to Zappa role on IAM:
+* DynamoDBFullAccess
+* Lambda_FullAccess
+* S3FullAccess
+* CloudwarcgFullAccess
+* APIGatewayFullAccess
+
+## To run (locally)
 Script must be executed with current shell with intergrated mode. In most cases, Ubuntu use BASH, and macOS use ZSH.
 `<shell> -i start.sh`
 
 To find out your shell with `echo $SHELL`.
 
-## To create environment:
-1. Create the environment from the `environment.yml` with `conda env create -f environment.yml`
-1. Activate the new environment with `conda activate <name_env>`, in this case, the `<name_env>` is `MEMCACHE`
-3. Inspect packages with `conda list`
+## To create environment with conda:
+1. Create the environment from the `environment.yml` with `conda env create -f environment.yml`.
+1. Activate the new environment with `conda activate <name_env>`, in this case, the `<name_env>` is `MEMCACHE`.
+3. Inspect packages with `conda list`.
+
+## To create environment with pip:
+1. Create the python3 venv with `python3 -m venv env`, and activate with `source env/bin/activate`.
+2. Run `pip install venv_requirements.txt`.
+3. Inspect packages with `pip list`.
 
 ## General requirements
 Your application implementation should comply with the following requirements:

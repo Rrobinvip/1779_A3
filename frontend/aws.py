@@ -50,6 +50,11 @@ class AWSController:
         return 1
 
     def add_file_s3(self, filename):
+        '''
+        Upload an image file from local to s3.
+        
+        Don't use this funciton if deploying on Lambda!
+        '''
         final_path = os.path.join(LOCAL_UPLOADS_DIR, filename)
         try:
             self.s3_client.upload_file(final_path, Config.BUCKET_NAME, filename)
@@ -57,6 +62,19 @@ class AWSController:
         except Exception as e:
             print(' - Frontend.aws.add_file_s3: Failed to add item to the s3!')
             return False
+    
+    def add_obj_s3(self, obj, obj_name):
+        '''
+        Add an object file to S3.
+        '''
+        self.s3_client.put_object(Body=obj, Bucket=Config.BUCKET_NAME, Key=obj_name)
+        
+    def get_obj_s3(self, obj_name):
+        '''
+        Get an object file from S3.
+        '''
+        obj = self.s3_resource.Object(Config.BUCKET_NAME, obj_name)
+        return obj
         
     def download_file(self, filename):
         final_path = os.path.join(LOCAL_S3_DL_DIR, filename)
@@ -271,7 +289,8 @@ class AWSController:
                     "metrics": [
                         [ "AWS/Lambda", "{}", "FunctionName", "imageDetection" ],
                         [ "AWS/Lambda", "{}", "FunctionName", "facialAnalysis" ],
-                        [ "AWS/Lambda", "{}", "FunctionName", "celebritiesDetect" ]
+                        [ "AWS/Lambda", "{}", "FunctionName", "celebritiesDetect" ],
+                        [ "AWS/Lambda", "{}", "FunctionName", "imgrecognition-dev" ]
                     ],
                     "view": "timeSeries",
                     "stacked": false,
@@ -282,7 +301,7 @@ class AWSController:
                     "start": "-PT1H",
                     "end": "P0D",
                     "timezone": "-0500"
-                }}'''.format(i, i, i),
+                }}'''.format(i, i, i, i),
                 OutputFormat='png'
             )
             string_image = base64.b64encode(response['MetricWidgetImage']).decode('utf-8')
