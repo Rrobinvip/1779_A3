@@ -7,7 +7,15 @@
         <h1 class="mb-5"> AWS status </h1>
         <div class="col-12 mx-auto mt-5">
             <h2 class="mb-3"> API Gateway status </h2>  
-            <p>Label detction: ooax7ms080, facial_analysis: ovss37g82h, celebrity detection: qxxjxcleb1</p>
+            <div class="panel panel-default">
+                <div class="panel-body mb-2">
+                <ul class="list-group">
+                    <li class="list-group-item">Label detction: ooax7ms080</li>
+                    <li class="list-group-item">facial_analysis: ovss37g82h</li>
+                    <li class="list-group-item">celebrity detection: qxxjxcleb1</li>
+                    </ul>
+                </div>
+            </div>
             {% if api_gateway_images %}
             {% for key, image in api_gateway_images.items() %}
             <img src = 'data:image/png;base64,{{image}}' />
@@ -18,7 +26,17 @@
             </div>
             {% endif %}
 
-            <h2 class="mb-2 mt-5"> Lambda status </h2> 
+            <h2 class="mb-3 mt-5"> Lambda status </h2> 
+            <div class="panel panel-default">
+                <div class="panel-body mb-2">
+                <ul class="list-group">
+                    <li class="list-group-item">imageDetection: Lambda for labeling images.</li>
+                    <li class="list-group-item">facialAnalysis: Lambda for analysis facial imformation.</li>
+                    <li class="list-group-item">celebritiesDetect: Lambda for decting celebrity information.</li>
+                    <li class="list-group-item">imgrecognition-dev: Lambda for this project.</li>
+                    </ul>
+                </div>
+            </div>
             {% if lambda_images %}
             {% for key, image in lambda_images.items() %}
             <img src = 'data:image/png;base64,{{image}}' />

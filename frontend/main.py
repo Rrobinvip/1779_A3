@@ -5,7 +5,6 @@
 # from traceback import clear_frames
 
 from glob import escape
-from tkinter.messagebox import NO
 from flask import render_template, url_for, request, redirect
 from flask import flash, jsonify
 from frontend import app
@@ -40,6 +39,8 @@ from frontend.config import Config
 # Image action form
 from frontend.form import ImageActionForm
 
+# Secure filename
+from werkzeug.utils import secure_filename
 
 '''
 **IMPORTANT!** instances doesn't updat their status automatically. Call `aws_controller.reload_instance_status()` every time befroe any
@@ -75,24 +76,20 @@ def upload_picture():
     
     if request.method == "POST" and picture_form.validate_on_submit():
         print(" * Upload init...")
-        filename = pictures.save(picture_form.pictures.data)
         key = picture_form.key.data
+        file_obj = picture_form.pictures.data.read()
+        filename = secure_filename(picture_form.pictures.data.filename)
         
-        current_time = current_datetime()
-        
-        result_s3 = aws_controller.add_file_s3(filename)
+        result_s3 = aws_controller.add_obj_s3(file_obj, filename)
         result_ddb = aws_controller.put_item_dynamo(key, filename)
         
         if not result_s3 and not result_ddb:
             print(" - Frontend.main.upload: Upload failed. Abort.")
             flash("Upload failed.")
-            # Remove download cache.
-            remove_file(filename)
             return redirect(url_for("upload_picture"))
         else:
             print(" - Frontend.main.upload: Upload success.")
             flash("Uplaod success.")
-            remove_file(filename)
             return redirect(url_for("upload_picture"))
     
     return render_template("upload.html", form=picture_form)
@@ -135,13 +132,15 @@ def search_key():
             if request.method == "GET" and "flag" in request.args:
                 file_url = 'https://{}.s3.amazonaws.com/{}'.format(Config.BUCKET_NAME, filename)
                 return jsonify({"status":200, "value":file_url})
+            
             filename = 'https://{}.s3.amazonaws.com/{}'.format(Config.BUCKET_NAME, filename)
+            
             
         
     return render_template("search.html", 
                         form = search_form, 
                         tag1_selected=True, 
-                        filename=filename, 
+                        filename=filename,
                         upload_time=upload_time,
                         key=key)
             

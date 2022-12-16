@@ -1,0 +1,10 @@
+{
+    "dev": {
+        "app_function": "frontend.app",
+        "aws_region": "us-east-1",
+        "profile_name": "default",
+        "project_name": "imgRecognition",
+        "runtime": "python3.9",
+        "s3_bucket": "zappa-w727u1c24"
+    }
+}
