@@ -15,5 +15,6 @@ class Config(object):
     DYNAMODB_NAME = '1779_a3_dev_1'
     LAMBDA_API = {
         'label_detection':'https://ooax7ms080.execute-api.us-east-1.amazonaws.com/imageDetection?filename=',
-        'facial_analysis':'https://ovss37g82h.execute-api.us-east-1.amazonaws.com/facialAnalysis?filename='
+        'facial_analysis':'https://ovss37g82h.execute-api.us-east-1.amazonaws.com/facialAnalysis?filename=',
+        'celebrity_detect':'https://qxxjxcleb1.execute-api.us-east-1.amazonaws.com/celebritiesDetect?filename='
     }

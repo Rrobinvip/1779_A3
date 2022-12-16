@@ -15,7 +15,7 @@
 
             {% if filename and upload_time and key %}
                 <div class="col-8 mx-auto mt-5 text-center">
-                    <h4> Image with key "{{key}}" found, filename: {{filename}} </h2>
+                    <h4> Key: <b>{{key}}</b> </h2>
                     <h4> Upload datetime: {{upload_time}} </h3>
                     <img class="img" style="width:400px;" src="{{ filename }}" alt="">
                 </div>
@@ -31,6 +31,9 @@
                     </div>
                     <div class="col-auto">
                         {{ form.facial(class="btn btn-primary")}}
+                    </div>
+                    <div class="col-auto">
+                        {{ form.celebrity(class="btn btn-primary")}}
                     </div>
                 </div>
             </form>
@@ -103,11 +106,38 @@
                         </td>
                     </tr>
 
-
-                </tbody>
-            </table>
-        </div>
+                    </tbody>
+                </table>
+            </div>
             {% endif %}
+
+            {% if cele %}
+            <div class="col-12 mx-auto mt-5"></div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Features</th>
+                            <th scope="col">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Name</td>
+                            <td>{{ cele['Name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Introduction URL</td>
+                            <td><a href="https://{{ cele['url'] }}">Link to {{ cele['Name'] }}</a></td>
+                        </tr>
+                        <tr>
+                            <td>Emotion</td>
+                            <td>{{ cele['Emotions']['Type'] }} with {{ cele['Emotions']['Confidence'] }}% confidence</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
         </div>
     </div>
 {% endblock %}
