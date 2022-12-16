@@ -1,40 +1,33 @@
 {% extends 'base.html' %}
 
-{% block title %} Status {% endblock %}
+{% block title %} AWS Status {% endblock %}
 
 {% block content%}
     <div class="col-12 mx-auto mt-5">
-        <h1 class="mb-5"> Memcache status </h1>
-        {% if items %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col"># of items</th>
-                    <th scope="col">size of items (~ MB)</th>
-                    <th scope="col"># of requests (Search request)</th>
-                    <th scope="col">miss rate</th>
-                    <th scope="col">hit rate</th>
-                    <th scope="col">datetime</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in items %}
-                <tr>
-                    <th scope="row">{{item[1]}}</th>
-                    <td>{{item[2]}}</td>
-                    <td>{{item[3]}}</td>
-                    <td>{{item[4]}}</td>
-                    <td>{{item[5]}}</td>
-                    <td>{{item[6]}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div class="alert alert-warning" role="alert">
-            There are no status recorded in DB. 
+        <h1 class="mb-5"> AWS status </h1>
+        <div class="col-12 mx-auto mt-5">
+            <h2 class="mb-3"> API Gateway status </h2>  
+            <p>Label detction: ooax7ms080, facial_analysis: ovss37g82h, celebrity detection: qxxjxcleb1</p>
+            {% if api_gateway_images %}
+            {% for key, image in api_gateway_images.items() %}
+            <img src = 'data:image/png;base64,{{image}}' />
+            {% endfor %}
+            {% else %}
+            <div class="alert alert-warning" role="alert">
+                Empty
+            </div>
+            {% endif %}
+
+            <h2 class="mb-2 mt-5"> Lambda status </h2> 
+            {% if lambda_images %}
+            {% for key, image in lambda_images.items() %}
+            <img src = 'data:image/png;base64,{{image}}' />
+            {% endfor %}
+            {% else %}
+            <div class="alert alert-warning" role="alert">
+                Empty
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
-    </div>
 
 {% endblock %}

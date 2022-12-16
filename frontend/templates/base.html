@@ -56,6 +56,17 @@
                     </li>
                     {% endif %}
 
+
+                    {% if tag4_selected %}
+                    <li class="nav-item active">
+                        <a class="nav-link active" href="{{ url_for('status') }}"> AWS Status </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('status') }}"> AWS Status </a>
+                    </li>
+                    {% endif %}
+
                 </ul>
             </div>
         </nav>

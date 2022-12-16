@@ -160,7 +160,7 @@ def all_pairs():
 
     return render_template("all_pairs.html", items=data, tag2_selected=True, url_list=image_url)
 
-@app.route("/delete")
+@app.route("/delete", methods=['GET', 'POST'])
 def delete_all():
     delete_form = ClearForm()
     
@@ -218,6 +218,14 @@ def image_action(key):
                            label = result_label,
                            facial = result_facial,
                            cele = result_cele)
+    
+@app.route("/status")
+def status():
+    api_gateway_images, lambda_images = aws_controller.get_metrics_image()
+    return render_template("status.html", 
+                           tag4_selected = True,
+                           api_gateway_images = api_gateway_images,
+                           lambda_images = lambda_images)
     
 
 @app.route("/api/list_keys", methods= ['POST'])
