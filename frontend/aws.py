@@ -4,6 +4,7 @@ from frontend.config import LOCAL_UPLOADS_DIR, LOCAL_CACHE_DIR, LOCAL_S3_DL_DIR
 from frontend.helper import current_datetime, api_call_lambda
 import requests
 import os
+import base64
 
 class AWSController:
     ec2_resource = None
@@ -17,6 +18,8 @@ class AWSController:
     dynamo_db = None
 
     master_instance = None
+    
+    cloud_client = None
 
     def __init__(self):
         '''
@@ -30,6 +33,11 @@ class AWSController:
         self.s3_client = boto3.client('s3', region_name='us-east-1')
         self.bucket = self.s3_resource.Bucket(Config.BUCKET_NAME)
         self.dynamo_db = boto3.client('dynamodb')
+        
+        self.cloud_client = boto3.client(
+            'cloudwatch',
+            region_name = 'us-east-1'
+        )
 
     def clear_s3(self):
         s3_bucket = self.s3_resource.Bucket('1779-g17-test-1')
@@ -222,3 +230,62 @@ class AWSController:
                 result.update({'Emotions':celebrity_info['Face']['Emotions'][0]})
                 
             return result
+        
+    def get_metrics_image(self):
+        '''
+        Return 2 dict of 'id - image' paired cloudwatch image. API-gateway and lambda.
+        '''
+        # Get API GATEWAY data:
+        result_api_gateway = {}
+        api_gateway_metrice = ['DataProcessed', 'Count', 'Latency']
+        
+        for i in api_gateway_metrice:
+            response = self.cloud_client.get_metric_widget_image(
+                MetricWidget = '''
+                {{
+                    "view": "timeSeries",
+                    "stacked": false,
+                    "metrics": [
+                        [ "AWS/ApiGateway", "{}", "ApiId", "qxxjxcleb1" ],
+                        [ "AWS/ApiGateway", "{}", "ApiId", "ovss37g82h" ],
+                        [ "AWS/ApiGateway", "{}", "ApiId", "ooax7ms080" ]
+                    ],
+                    "width": 1000,
+                    "height": 200,
+                    "start": "-PT1H",
+                    "end": "P0D",
+                    "timezone": "-0500"
+                }}'''.format(i, i, i),
+                OutputFormat='png'
+            )
+            string_image = base64.b64encode(response['MetricWidgetImage']).decode('utf-8')
+            result_api_gateway.update({i:string_image})
+            
+        result_lambda = {}
+        lambda_metrics = ['Errors', 'ConcurrentExecutions', 'Duration']
+           
+        for i in lambda_metrics:
+            response = self.cloud_client.get_metric_widget_image(
+                MetricWidget = '''
+                {{
+                    "metrics": [
+                        [ "AWS/Lambda", "{}", "FunctionName", "imageDetection" ],
+                        [ "AWS/Lambda", "{}", "FunctionName", "facialAnalysis" ],
+                        [ "AWS/Lambda", "{}", "FunctionName", "celebritiesDetect" ]
+                    ],
+                    "view": "timeSeries",
+                    "stacked": false,
+                    "stat": "Average",
+                    "period": 300,
+                    "width": 1000,
+                    "height": 200,
+                    "start": "-PT1H",
+                    "end": "P0D",
+                    "timezone": "-0500"
+                }}'''.format(i, i, i),
+                OutputFormat='png'
+            )
+            string_image = base64.b64encode(response['MetricWidgetImage']).decode('utf-8')
+            result_lambda.update({i:string_image})
+              
+        return result_api_gateway, result_lambda

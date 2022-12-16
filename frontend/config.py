@@ -18,3 +18,8 @@ class Config(object):
         'facial_analysis':'https://ovss37g82h.execute-api.us-east-1.amazonaws.com/facialAnalysis?filename=',
         'celebrity_detect':'https://qxxjxcleb1.execute-api.us-east-1.amazonaws.com/celebritiesDetect?filename='
     }
+    API_GATEWAY_ID = {
+        'label_detection':'ooax7ms080',
+        'facial_analysis':'ovss37g82h',
+        'celebrity_dect':'qxxjxcleb1'
+    }
