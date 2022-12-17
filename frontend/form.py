@@ -53,7 +53,7 @@ class SearchForm(FlaskForm):
         ],
         render_kw={"placeholder": "Key"}
     )
-    submit = SubmitField("Search")
+    submit = SubmitField("Search", render_kw={"onclick": "loading()"})
 
 class ConfigForm(FlaskForm):
     size = IntegerField(
@@ -71,9 +71,9 @@ class ConfigForm(FlaskForm):
     submit = SubmitField("Apply")
 
 class ClearForm(FlaskForm):
-    delete = SubmitField("Remove all data")
+    delete = SubmitField("Remove all data", render_kw={"onclick": "loading()"})
     
 class ImageActionForm(FlaskForm):
-    label = SubmitField("Label detection")
-    facial = SubmitField("Facial analysis")
-    celebrity = SubmitField("Celebrity detect")
+    label = SubmitField("Label detection", render_kw={"onclick": "loading()", "id": "label_1"})
+    facial = SubmitField("Facial analysis", render_kw={"onclick": "loading()"})
+    celebrity = SubmitField("Celebrity detect", render_kw={"onclick": "loading()"})
