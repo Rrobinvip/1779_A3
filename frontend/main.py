@@ -128,6 +128,7 @@ def search_key():
                 flash("No image with this key.")
                 if request.method == "GET" and "flag" in request.args:
                     return jsonify({"status":400, "value":None})
+                return redirect(url_for('search_key'))
         else:
             if request.method == "GET" and "flag" in request.args:
                 file_url = 'https://{}.s3.amazonaws.com/{}'.format(Config.BUCKET_NAME, filename)

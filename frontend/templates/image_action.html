@@ -21,25 +21,25 @@
                 </div>
             {% endif %}
 
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" class="mb-3">
                 {{ form.hidden_tag() }}
             
 
                 <div class="row justify-content-center mt-5">
                     <div class="col-auto">
-                        {{ form.label(class="btn btn-primary")}}
+                        {{ form.label(class="btn btn-primary") }}
                     </div>
                     <div class="col-auto">
-                        {{ form.facial(class="btn btn-primary")}}
+                        {{ form.facial(class="btn btn-primary") }}
                     </div>
                     <div class="col-auto">
-                        {{ form.celebrity(class="btn btn-primary")}}
+                        {{ form.celebrity(class="btn btn-primary") }}
                     </div>
                 </div>
             </form>
 
             {% if label %}
-            <div class="col-12 mx-auto mt-5"></div>
+            <div class="col-12 mx-auto mt-5 mb-5"></div>
                 <table class="table">
                     <thead>
                         <tr>
@@ -59,7 +59,7 @@
             </div>
             {% endif %}
             {% if facial %}
-            <div class="col-12 mx-auto mt-5"></div>
+            <div class="col-12 mx-auto mt-5 mb-5"></div>
             <div class="alert alert-warning" role="alert">
                 Gender is purely identified by AWS Rekognition and we do not make any kind of assumptions on it. 
                 We are not responsible for this gender.
@@ -112,7 +112,7 @@
             {% endif %}
 
             {% if cele %}
-            <div class="col-12 mx-auto mt-5"></div>
+            <div class="col-12 mx-auto mt-5 mb-5"></div>
                 <table class="table">
                     <thead>
                         <tr>
