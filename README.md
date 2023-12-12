@@ -1,4 +1,4 @@
-# ECE 1779 A3 Pic cache and recognition - Group 17
+# ECE 1779 Pic cache and recognition
 
 ## Zappa
 Project is already deployed on Lambda with Zappa. 
